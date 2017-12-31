@@ -1,4 +1,4 @@
-Project: Secure Slug
+# Project: Secure Slug
 
 Some background:
 The Secure Slug was a robotics project I collaborated on with Ian Van Steen, Clare Rickard and Vidisha Nevatia for the 
