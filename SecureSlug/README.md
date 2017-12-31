@@ -9,7 +9,7 @@ where the customers can deposit goods and the business can withdraw them. It can
 the business could deposit some goods to various customers. For example the business can be a bank, and the customers 
 can be bank patrons who are depositing money. 
 
-File: Gate.ino
+# File: Gate.ino
 
 Description: Gate.ino operates the gate, which is the how the user interacts with the robot. It allows the user to create 
 a withdraw password and a deposit password, which are used for other users to either open the gate for withdrawal or
