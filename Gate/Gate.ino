@@ -1,5 +1,5 @@
 //**********************************************************************
-//* Project           : Secure Slug
+//* Project           : Secure Slug Gate
 //*
 //* Program name      : Gate.ino
 //*
@@ -61,29 +61,26 @@ void loop() {
   dpasswordEntry();
   flushReceive(); 
   wpasswordEntry(); 
-
   // if read so LEDs dont light up without passwords being set
-  if (depositRead && withdrawRead){
+  if (depositRead && withdrawRead)
      passwordEntry(); 
-  }
 }
 
 // FUNCTIONS
 
-// flushes buffer
-// flushes the serial buffer 
+// flushReceive()
+// flushes serial buffer 
 void flushReceive(){
   while(Serial.available())
     Serial.read();
 }
 
-// deposit password
+// dpasswordEntry()
 // gets input for deposit password
 void dpasswordEntry(){
   if (!depositRead){
     byte index = 0;
     Serial.println("Please enter a unique password of length 4 for deposit:");
-    
     // runs this infinitely so it wont keep displaying print statements
     while (true){
       // while there is still data in buffer
@@ -93,7 +90,7 @@ void dpasswordEntry(){
           // read in digit
           DPASSWORD[index] = Serial.read() - '0';
           index++;
-          // needed to put condition in here or else it doesnt work
+          // break if index is SIZE
           if (index == SIZE){
             depositRead = true; 
             break; 
@@ -110,13 +107,12 @@ void dpasswordEntry(){
   } // end if not read
 }
 
-// withdraw password
+// wpasswordEntry()
 // gets input for withdraw password
 void wpasswordEntry(){
   if (!withdrawRead){
     byte index = 0;
     Serial.println("\nPlease enter a password of length 4 for withdrawal:");
-    
     // runs this infinitely so it wont keep displaying print statements
     while (true){
       // while there is still data in buffer
@@ -126,7 +122,7 @@ void wpasswordEntry(){
           // read in digit
           WPASSWORD[index] = Serial.read() - '0';
           index++;
-          // needed to put condition in here or else it doesnt work
+          // break if index is SIZE
           if (index == SIZE){
             withdrawRead = true; 
             break; 
@@ -143,7 +139,9 @@ void wpasswordEntry(){
   } // end if not read
 }
 
-// 
+// checkWithdrawPassword()
+// checks if password entered by 
+// user is the withdraw password
 bool checkWithdrawPassword(){
   for (byte i = 0; i < SIZE; i++){
     if (input[i] != WPASSWORD[i])
@@ -152,6 +150,9 @@ bool checkWithdrawPassword(){
   return true;  
 }
 
+// checkWithdrawPassword()
+// checks if password entered by 
+// user is the deposit password
 bool checkDepositPassword(){
   for (byte i = 0; i < SIZE; i++){
     if (input[i] != DPASSWORD[i])
@@ -160,25 +161,26 @@ bool checkDepositPassword(){
   return true;  
 }
 
+// shiftWrite()
+// takes the pin to be written to and 
+// desiredState (HIGH or LOW) and sets pin
+// to desiredState
 void shiftWrite(int desiredPin, boolean desiredState)
 {
-  // First we'll alter the global variable "data", changing the
-  // desired bit to 1 or 0:
-
-  bitWrite(data,desiredPin,desiredState);
   // data is a byte (8 bits), desiredPin is the location of the 
   // bit (0 thru 7) and the desired state is HIGH or LOW
   // 1 <=> HIGH, 0 <=> LOW
-
-  shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, data);
+  bitWrite(data,desiredPin,desiredState);
   // MSBFIST = most siginificant bit first
   // sends data to clockpin which will write HIGH to desired pin
-
+  shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, data);
   // latchpin latches data to correct pin 
   digitalWrite(LATCHPIN, HIGH);
   digitalWrite(LATCHPIN, LOW);
 }
 
+// displayGreen()
+// lights up the green LED
 void displayGreen(){
   for (byte i = 0; i < 5; i++){
     shiftWrite(2,HIGH); // display green
@@ -188,6 +190,8 @@ void displayGreen(){
   }
 }
 
+// displayRed()
+// lights up red LED
 void displayRed(){
   for (byte i = 0; i < 5; i++){
     shiftWrite(1,HIGH); // display red
@@ -197,12 +201,17 @@ void displayRed(){
   }
 }
 
+// withdraw()
+// rotates servo so gate opens for withdrawal
 void withdraw(){
   myservo.write(180); 
   delay(10000);
   displayRed(); 
   myservo.write(90);   
 }
+
+// deposit()
+// rotates servo so gate opens for deposit
 void deposit(){
   myservo.write(0);
   delay(10000);
@@ -210,46 +219,50 @@ void deposit(){
   myservo.write(90); 
 }
 
-// buttons are not reading in
+// passwordEntry()
+// sets input array to sequence of numbers the user enters,
+// then checks against the withdraw and deposit passwords. 
+// It then either opens the gate accordingly or it remains 
+// closed
 void passwordEntry(){
   if (withdrawRead && depositRead){
     int button1State, button2State, button3State, enterState;
+    // get state of each button
     button1State = digitalRead(BUT1);
     button2State = digitalRead(BUT2);
     button3State = digitalRead(BUT3); 
     enterState  = digitalRead(ENTER); 
-
-    
+    // if enter has not been pressed
     if (enterState == HIGH){
       if (button1State == LOW && button2State != LOW && button3State != LOW){
         input[i] = 1;
         i++;
         delay(200);  
-      }
+      } // end if
       else if (button2State == LOW && button1State != LOW && button3State != LOW){
         input[i] = 2;
         i++;
         delay(200);  
-      } 
+      } // end else-if
       else if (button3State == LOW && button1State != LOW && button2State != LOW){
         input[i] = 3; 
         i++; 
         delay(200);  
-      }
-    }
-    else{
+      } // end else-if
+    } // end if
+    else{ // if enter has been pressd, check against withdraw and deposit password
       if (checkWithdrawPassword()){
           displayGreen();
           withdraw(); 
-      }
+      } // end if
       else if (checkDepositPassword()){
           displayGreen(); 
           deposit(); 
-      }
-      else
+      } // end else-if
+      else // else display red if incorrect password(s) are entered
           displayRed(); 
       // reset counter
       i = 0;   
-    }
-  }
+    } // end else
+  } // end else
 }
