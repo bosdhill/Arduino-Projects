@@ -77,7 +77,7 @@ void loop() {
     // When the robot is about 5 cm close to the bot he then attacks
     Kill();
   }
-  //Hysteresis for the tape sensor code
+  // Hysteresis for the tape sensor code
   CurrentTape = analogRead();
   Serial.println(CurrentTape);
   if (CurrentTape > OnTapeThreshold && PreviousTape < OffTapeThreshold) {
@@ -86,7 +86,6 @@ void loop() {
     // when the robot is on the tape I have an Evasive function
     Evasive();
   }
-
   else if (CurrentTape < OffTapeThreshold && PreviousTape > OnTapeThreshold) {
     Serial.println("OFF Tape");
     PreviousTape = CurrentTape;
@@ -95,7 +94,7 @@ void loop() {
 
 // function definitions
 
-// moves the car forwards
+// moves the robot forwards
 void Forward() {
   ForwardR();
   ForwardL();
@@ -103,7 +102,7 @@ void Forward() {
   //Stop();
 }
 
-// moves the car backwards
+// moves the robot backwards
 void Reverse() {
   ReverseR();
   ReverseL();
@@ -111,7 +110,7 @@ void Reverse() {
   Stop();
 }
 
-// turns the car counterclockwise (left) 90 degrees
+// turns the robot counterclockwise (left) 90 degrees
 void TurnCounterClockwise() {
   ForwardR();
   ReverseL();
@@ -119,7 +118,7 @@ void TurnCounterClockwise() {
   Stop();
 }
 
-// turns the car clockwise (right) 90 degrees
+// turns the robot clockwise (right) 90 degrees
 void TurnClockwise() {
   ForwardL();
   ReverseR();
@@ -127,18 +126,21 @@ void TurnClockwise() {
   Stop();
 }
 
+// spins the robot counterclockwise
 void SpinCounterClockwise() {
   ForwardR();
   ReverseL();
   delay(1000);
 }
 
+// spins the robot clockwise
 void SpinClockwise() {
   ForwardL();
   ReverseR();
   delay(1000);
 }
 
+// stops all motors 
 void Stop() {
   digitalWrite(FORWARD_RIGHT, LOW);
   digitalWrite(BACK_RIGHT, LOW);
