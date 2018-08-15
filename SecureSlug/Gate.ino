@@ -3,7 +3,7 @@
 //*
 //* Program name      : Gate.ino
 //*
-//* Author            : bobbybuddha
+//* Author            : bosdhill
 //*
 //* Date created      : 11/30/17
 //*
