@@ -3,7 +3,7 @@
 //*
 //* Program name      : ETTPbot.ino
 //*
-//* Authors           : bosdhill
+//* Authors           : bosdhill, Lily Nguyen
 //*
 //* Date created      : 7/25/17
 //*
